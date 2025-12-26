@@ -25,6 +25,10 @@ app.use(
   })
 );
 
+const fetch = (...args) =>
+  import('node-fetch').then(({ default: fetch }) => fetch(...args));
+
+
 /* =========================
    LEVEL 1
 ========================= */
