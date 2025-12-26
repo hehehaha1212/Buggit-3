@@ -225,29 +225,20 @@
   <script src="config.js"></script>
   <script>
   document.addEventListener("DOMContentLoaded", async () => {
-    const params = new URLSearchParams(window.location.search);
+  const params = new URLSearchParams(window.location.search);
+  const token = params.get("token");
 
-    const token = params.get("token");
-    if (token) {
-      // 1. Send token to server
-      await fetch("/register-token", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ token })
-      });
+  if (token) {
+    await fetch("/register-token", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ token })
+    });
 
-      // 2. Remove token from URL (important)
-      params.delete("token");
-      const cleanURL =
-        window.location.pathname +
-        (params.toString() ? "?" + params.toString() : "");
-      window.history.replaceState({}, document.title, cleanURL);
-
-      console.log("Token registered with server");
-    }
-  });
+    params.delete("token");
+    history.replaceState({}, "", location.pathname);
+  }
+});
     let unlocked = false;
 
     function checkEligibility() {
