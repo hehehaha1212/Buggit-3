@@ -72,19 +72,41 @@ app.get('/lab', (req, res) => {
    BUG FOUND
 ========================= */
 
-app.get('/bug-found', (req, res) => {
+app.get('/bug-found', async (req, res) => {
   if (!req.session.bugFoundAllowed) {
     return res.status(403).send('Nothing to see here.');
   }
-
-  // one-time win
   req.session.bugFoundAllowed = false;
+  const token = req.session.challengeToken;
 
-  res.send(`
+  if (!token) {
+    return res.status(401).json({ message: "No challenge token" });
+  }
+
+  try {
+    const response = await fetch(`${process.env.EXTERNAL_SOLVE_URL}/api/solved`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": token,
+      },
+      body: JSON.stringify({
+        questionId: process.env.QUESTION_ID,
+      }),
+    });
+
+    const data = await response.json();
+
+    return res.send(`
     <h1>🐞 Bug Found!</h1>
     <p>You chained multiple vulnerabilities across system boundaries.</p>
     <p><strong>BUGGIT COMPLETE.</strong></p>
   `);
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: "Solve failed" });
+  }
+
 });
 
 /* =========================
@@ -92,6 +114,7 @@ app.get('/bug-found', (req, res) => {
 ========================= */
 
 app.get('/', (req, res) => {
+
   res.redirect('/level1');
 });
 
@@ -104,10 +127,26 @@ app.get('/level2', (req, res) => {
     return res.status(403).send('Solve Level 1 first.');
   }
 
+
   // consume access
   req.session.level2Allowed = false;
 
   res.sendFile(path.join(__dirname, 'protected/level2/index.html'));
+});
+
+
+app.post("/register-token", express.json(), (req, res) => {
+  const { token } = req.body;
+
+  if (!token) {
+    return res.status(400).json({ message: "Token missing" });
+  }
+
+  // Store token in session
+  req.session.challengeToken = token;
+
+  console.log("Token stored in session");
+  res.json({ ok: true });
 });
 
 app.get('/favicon.ico', (req, res) => res.status(204).end());

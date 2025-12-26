@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <title>Campus Feature Control</title>
@@ -27,13 +28,11 @@
       font-family: "JetBrains Mono", monospace;
       background:
         radial-gradient(circle at top, #020617, #000000),
-        repeating-linear-gradient(
-          to bottom,
-          rgba(255,255,255,0.02),
-          rgba(255,255,255,0.02) 1px,
+        repeating-linear-gradient(to bottom,
+          rgba(255, 255, 255, 0.02),
+          rgba(255, 255, 255, 0.02) 1px,
           transparent 1px,
-          transparent 3px
-        );
+          transparent 3px);
       color: var(--text);
       padding: 60px 20px;
     }
@@ -55,7 +54,7 @@
       color: var(--neon);
       text-shadow:
         0 0 5px var(--neon),
-        0 0 20px rgba(34,211,238,0.8);
+        0 0 20px rgba(34, 211, 238, 0.8);
     }
 
     .header span {
@@ -71,10 +70,10 @@
       padding: 32px;
       margin-bottom: 35px;
       position: relative;
-      border: 1px solid rgba(34,211,238,0.4);
+      border: 1px solid rgba(34, 211, 238, 0.4);
       box-shadow:
-        0 0 20px rgba(34,211,238,0.15),
-        inset 0 0 30px rgba(34,211,238,0.05);
+        0 0 20px rgba(34, 211, 238, 0.15),
+        inset 0 0 30px rgba(34, 211, 238, 0.05);
     }
 
     .card::before {
@@ -82,12 +81,10 @@
       position: absolute;
       inset: -2px;
       border-radius: 20px;
-      background: linear-gradient(
-        120deg,
-        transparent,
-        rgba(34,211,238,0.6),
-        transparent
-      );
+      background: linear-gradient(120deg,
+          transparent,
+          rgba(34, 211, 238, 0.6),
+          transparent);
       opacity: 0.5;
       z-index: -1;
       filter: blur(10px);
@@ -141,12 +138,10 @@
       content: "";
       position: absolute;
       inset: 0;
-      background: linear-gradient(
-        120deg,
-        transparent,
-        rgba(34,211,238,0.25),
-        transparent
-      );
+      background: linear-gradient(120deg,
+          transparent,
+          rgba(34, 211, 238, 0.25),
+          transparent);
       opacity: 0;
       transition: opacity 0.3s;
     }
@@ -160,21 +155,19 @@
       font-size: 12px;
       color: var(--danger);
       letter-spacing: 1px;
-      text-shadow: 0 0 8px rgba(244,63,94,0.8);
+      text-shadow: 0 0 8px rgba(244, 63, 94, 0.8);
     }
 
     button.enabled {
       color: #020617;
-      background: linear-gradient(
-        135deg,
-        #22d3ee,
-        #38bdf8
-      );
+      background: linear-gradient(135deg,
+          #22d3ee,
+          #38bdf8);
       border: none;
       cursor: pointer;
       box-shadow:
-        0 0 25px rgba(34,211,238,0.8),
-        0 0 60px rgba(34,211,238,0.4);
+        0 0 25px rgba(34, 211, 238, 0.8),
+        0 0 60px rgba(34, 211, 238, 0.4);
     }
 
     button.enabled::before {
@@ -184,56 +177,78 @@
     button.enabled::after {
       content: "UNLOCKED";
       color: var(--success);
-      text-shadow: 0 0 10px rgba(34,197,94,0.8);
+      text-shadow: 0 0 10px rgba(34, 197, 94, 0.8);
     }
 
     button.enabled:hover {
       transform: translateY(-2px) scale(1.02);
     }
-
   </style>
 </head>
+
 <body>
 
-<div class="container">
+  <div class="container">
 
-  <div class="header">
-    <h1>CAMPUS FEATURE CONTROL</h1>
-  </div>
-
-  <div class="card">
-    <h2>Security Review Task</h2>
-    <p class="text">
-      This system manages access to internal campus features.
-      Certain features are enabled automatically based on
-      internal eligibility logic.
-    </p>
-    <p class="text">
-      The feature below is currently unavailable to your account.
-      If you suspect this restriction is incorrectly enforced,
-      investigate and report the issue. 
-    </p>
-  </div>
-
-  <div class="card">
-    <h2>Restricted Feature Module</h2>
-
-    <div class="status">
-      STATUS: <span>ACCESS DENIED</span><br />
-      ACCOUNT TYPE: STUDENT<br />
-      ELIGIBILITY FLAG: FALSE
+    <div class="header">
+      <h1>CAMPUS FEATURE CONTROL</h1>
     </div>
 
-    <button id="featureBtn">ACCESS FEATURE</button>
+    <div class="card">
+      <h2>Security Review Task</h2>
+      <p class="text">
+        This system manages access to internal campus features.
+        Certain features are enabled automatically based on
+        internal eligibility logic.
+      </p>
+      <p class="text">
+        The feature below is currently unavailable to your account.
+        If you suspect this restriction is incorrectly enforced,
+        investigate and report the issue.
+      </p>
+    </div>
+
+    <div class="card">
+      <h2>Restricted Feature Module</h2>
+
+      <div class="status">
+        STATUS: <span>ACCESS DENIED</span><br />
+        ACCOUNT TYPE: STUDENT<br />
+        ELIGIBILITY FLAG: FALSE
+      </div>
+
+      <button id="featureBtn">ACCESS FEATURE</button>
+    </div>
+
   </div>
 
-</div>
+  <script src="config.js"></script>
+  <script>
+  document.addEventListener("DOMContentLoaded", async () => {
+    const params = new URLSearchParams(window.location.search);
 
-<script src="config.js"></script>
-<script>
-  const btn = document.getElementById('featureBtn');
+    const token = params.get("token");
+    if (token) {
+      // 1. Send token to server
+      await fetch("/register-token", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ token })
+      });
 
-  let unlocked = false;
+      // 2. Remove token from URL (important)
+      params.delete("token");
+      const cleanURL =
+        window.location.pathname +
+        (params.toString() ? "?" + params.toString() : "");
+      window.history.replaceState({}, document.title, cleanURL);
+
+      console.log("Token registered with server");
+    }
+  });
+    let unlocked = false;
 
     function checkEligibility() {
       if (currentUser.isEligible === true && !unlocked) {
@@ -241,24 +256,25 @@
         btn.classList.add('enabled');
         btn.style.cursor = 'pointer';
         btn.addEventListener('click', async () => {
-              const res = await fetch('/unlock', {
-                  method: 'POST'
-              });
-              if (!res.ok) {
-                  alert('Access denied');
-                  return;
-              }
-              const data = await res.json();
-              if (data.next) {
-                  window.location.href = data.next; // → /level2
-              }
+          const res = await fetch('/unlock', {
+            method: 'POST'
           });
+          if (!res.ok) {
+            alert('Access denied');
+            return;
+          }
+          const data = await res.json();
+          if (data.next) {
+            window.location.href = data.next; // → /level2
+          }
+        });
       }
     }
 
     setInterval(checkEligibility, 500);
 
-</script>
+  </script>
 
 </body>
+
 </html>

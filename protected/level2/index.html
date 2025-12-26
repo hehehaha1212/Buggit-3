@@ -79,7 +79,20 @@
   </div>
 
   <script>
+    document.addEventListener("DOMContentLoaded", () => {
+  const params = new URLSearchParams(window.location.search);
+  const teamcode = params.get("teamcode");
+  if (teamcode) {
+    localStorage.setItem("teamcode", teamcode);
+    params.delete("teamcode");
+    const cleanURL = window.location.pathname + (params.toString() ? "?" + params.toString() : "");
+    window.history.replaceState({}, document.title, cleanURL);
+
+    console.log("Teamcode saved:", teamcode);
+  }
+});
     async function requestAccess(event) {
+
       const btn = event.target;
       btn.classList.add('loading');
       btn.innerText = 'Submitting Request…';
