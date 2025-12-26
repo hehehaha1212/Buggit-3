@@ -1,103 +1,265 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Campus Resource Booking</title>
+  <title>Campus Feature Control</title>
+
   <style>
+    :root {
+      --bg: #030712;
+      --panel: rgba(3, 7, 18, 0.85);
+      --border: #22d3ee;
+      --neon: #22d3ee;
+      --neon-pink: #21d33b;
+      --text: #e5e7eb;
+      --muted: #94a3b8;
+      --danger: #ed4c28;
+      --success: #22c55e;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       margin: 0;
-      font-family: Inter, Arial, sans-serif;
-      background: linear-gradient(135deg, #312e81, #020617);
-      color: #e5e7eb;
+      min-height: 100vh;
+      font-family: "JetBrains Mono", monospace;
+      background:
+        radial-gradient(circle at top, #020617, #000000),
+        repeating-linear-gradient(
+          to bottom,
+          rgba(255,255,255,0.02),
+          rgba(255,255,255,0.02) 1px,
+          transparent 1px,
+          transparent 3px
+        );
+      color: var(--text);
+      padding: 60px 20px;
     }
+
     .container {
-      max-width: 800px;
-      margin: 60px auto;
-      padding: 30px;
-      background: rgba(2, 6, 23, 0.9);
-      border-radius: 16px;
-      box-shadow: 0 25px 50px rgba(0,0,0,0.4);
+      max-width: 900px;
+      margin: auto;
     }
-    h1 { margin-top: 0; }
+
+    /* Neon header */
+    .header {
+      margin-bottom: 50px;
+      text-align: center;
+    }
+
+    .header h1 {
+      font-size: 32px;
+      letter-spacing: 3px;
+      color: var(--neon);
+      text-shadow:
+        0 0 5px var(--neon),
+        0 0 20px rgba(34,211,238,0.8);
+    }
+
+    .header span {
+      color: var(--muted);
+      font-size: 14px;
+      letter-spacing: 1px;
+    }
+
+    /* Card */
     .card {
-      background: #020617;
-      border: 1px solid #1e293b;
-      border-radius: 14px;
-      padding: 20px;
-      margin-top: 20px;
+      background: var(--panel);
+      border-radius: 18px;
+      padding: 32px;
+      margin-bottom: 35px;
+      position: relative;
+      border: 1px solid rgba(34,211,238,0.4);
+      box-shadow:
+        0 0 20px rgba(34,211,238,0.15),
+        inset 0 0 30px rgba(34,211,238,0.05);
     }
-    .row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+
+    .card::before {
+      content: "";
+      position: absolute;
+      inset: -2px;
+      border-radius: 20px;
+      background: linear-gradient(
+        120deg,
+        transparent,
+        rgba(34,211,238,0.6),
+        transparent
+      );
+      opacity: 0.5;
+      z-index: -1;
+      filter: blur(10px);
     }
-    .badge {
-      padding: 5px 12px;
-      border-radius: 999px;
-      font-size: 12px;
-      background: #7c2d12;
-      color: #fed7aa;
+
+    .card h2 {
+      margin-top: 0;
+      color: var(--neon-pink);
+      text-shadow: 0 0 10px rgba(42, 197, 89, 0.7);
     }
-    button {
-      background: #2563eb;
-      border: none;
-      color: white;
-      padding: 12px 22px;
-      border-radius: 12px;
-      cursor: pointer;
+
+    .text {
+      color: #c7d2fe;
+      line-height: 1.7;
       font-size: 15px;
-      transition: transform 0.1s ease, background 0.2s ease, opacity 0.2s ease;
     }
-    button.secondary {
-      background: #334155;
-      margin-left: 10px;
+
+    /* Status box */
+    .status {
+      margin-top: 20px;
+      padding: 18px;
+      border-radius: 12px;
+      background: #020617;
+      border: 1px dashed rgba(42, 197, 89, 0.7);
+      font-size: 14px;
     }
-    button:active {
-      transform: scale(0.97);
+
+    .status span {
+      color: var(--danger);
+      text-shadow: 0 0 8px rgba(42, 197, 89, 0.7);
     }
-    button.loading {
-      background: #334155;
+
+    /* Button */
+    button {
+      margin-top: 30px;
+      padding: 16px 32px;
+      font-size: 15px;
+      font-family: "JetBrains Mono", monospace;
+      letter-spacing: 2px;
+      background: transparent;
+      color: #64748b;
+      border: 2px solid #334155;
+      border-radius: 14px;
       cursor: not-allowed;
-      opacity: 0.8;
+      position: relative;
+      transition: all 0.35s ease;
+      overflow: hidden;
     }
+
+    button::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        120deg,
+        transparent,
+        rgba(34,211,238,0.25),
+        transparent
+      );
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    button::after {
+      content: "LOCKED";
+      position: absolute;
+      right: -70px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 12px;
+      color: var(--danger);
+      letter-spacing: 1px;
+      text-shadow: 0 0 8px rgba(244,63,94,0.8);
+    }
+
+    button.enabled {
+      color: #020617;
+      background: linear-gradient(
+        135deg,
+        #22d3ee,
+        #38bdf8
+      );
+      border: none;
+      cursor: pointer;
+      box-shadow:
+        0 0 25px rgba(34,211,238,0.8),
+        0 0 60px rgba(34,211,238,0.4);
+    }
+
+    button.enabled::before {
+      opacity: 1;
+    }
+
+    button.enabled::after {
+      content: "UNLOCKED";
+      color: var(--success);
+      text-shadow: 0 0 10px rgba(34,197,94,0.8);
+    }
+
+    button.enabled:hover {
+      transform: translateY(-2px) scale(1.02);
+    }
+
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Campus Resource Booking</h1>
-    <p>Students can request lab resources for academic projects.</p>
 
-    <div class="card">
-      <div class="row">
-        <h3>High-Performance Lab</h3>
-        <span class="badge">LIMITED</span>
-      </div>
-      <p>Access requires faculty approval.</p>
+<div class="container">
 
-      <button onclick="requestAccess(event)">Request Access</button>
-      <button class="secondary" onclick="viewLab()">View Lab Access</button>
-    </div>
+  <div class="header">
+    <h1>CAMPUS FEATURE CONTROL</h1>
+    <span>NEON ACCESS MANAGEMENT INTERFACE</span>
   </div>
 
-  <script>
-    async function requestAccess(event) {
-      const btn = event.target;
-      btn.classList.add('loading');
-      btn.innerText = 'Submitting Request…';
+  <div class="card">
+    <h2>Security Review Task</h2>
+    <p class="text">
+      This system manages access to internal campus features.
+      Certain features are enabled automatically based on
+      internal eligibility logic.
+    </p>
+    <p class="text">
+      The feature below is currently unavailable to your account.
+      If you suspect this restriction is incorrectly enforced,
+      investigate and report the issue. 
+    </p>
+  </div>
 
-      await fetch('/api/request/create', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ requestedBy: 'student', approved: false })
-      });
+  <div class="card">
+    <h2>Restricted Feature Module</h2>
 
-      setTimeout(() => {
-        btn.innerText = 'Request Submitted';
-      }, 500);
+    <div class="status">
+      STATUS: <span>ACCESS DENIED</span><br />
+      ACCOUNT TYPE: STUDENT<br />
+      ELIGIBILITY FLAG: FALSE
+    </div>
+
+    <button id="featureBtn">ACCESS FEATURE</button>
+  </div>
+
+</div>
+
+<script src="config.js"></script>
+<script>
+  const btn = document.getElementById('featureBtn');
+
+  let unlocked = false;
+
+    function checkEligibility() {
+      if (currentUser.isEligible === true && !unlocked) {
+        unlocked = true;
+        btn.classList.add('enabled');
+        btn.style.cursor = 'pointer';
+        btn.addEventListener('click', async () => {
+              const res = await fetch('/unlock', {
+                  method: 'POST'
+              });
+              if (!res.ok) {
+                  alert('Access denied');
+                  return;
+              }
+              const data = await res.json();
+              if (data.next) {
+                  window.location.href = data.next; // → /level2
+              }
+          });
+      }
     }
 
-    function viewLab() {
-      window.open('/lab', '_blank');
-    }
-  </script>
+    setInterval(checkEligibility, 500);
+
+</script>
+
 </body>
 </html>
